@@ -1,6 +1,9 @@
 import React,{useState,useEffect} from "react";
 import PixelCanvas from "../components/PixelCanvas";
+import TimeDisplay from "../components/TimeDisplay";
 import {CompactPicker} from "react-color";
+import { dragonforgedAPI } from '../util/apiCall';
+import { useWeb3Context } from '../util/Web3Context';
 
 import styled from "styled-components";
 
@@ -18,68 +21,49 @@ const ButtonWrapper = styled.button`
 
 
 export default function Canvas() {
-  const [currentAccount, setCurrentAccount] = useState(null);
   const [selectedColor, setSelectedColor] = useState('#f44336');
+  const [freePixelTime, setFreePixelTime] = useState(null);
+  //const [currentAccount, setCurrentAccount] = useState(Web3Context.currentAccount);
+  const {currentAccount,checkWalletConnection} = useWeb3Context();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        let res = null;//await dragonforgedAPI.getFreePixelTime(currentAccount);
+
+        if (res) {
+          setFreePixelTime(res.time -  Date.now());
+        }
+      }
+      catch (e) {
+        alert(e);
+      }
+   };
+   fetchData();
+
+  }, [currentAccount]);
 
   const changeColorHandler = (color) => {
     setSelectedColor(color.hex);
   };
   
   const connectWalletHandler = async () => {
-    const { ethereum } = window;
-
-    if(!ethereum) {
-        console.log("You need to have Metamask installed!");
-    } 
-
-    try {
-        const accounts = await ethereum.request({method: "eth_requestAccounts"});
-        setCurrentAccount(accounts[0]);
-    } catch (e) {
-        console.log(e);
-    }
-}
-  const checkWalletConnection = async () => {
-    const { ethereum } = window;
-    if (!ethereum)
-    {
-        console.log("You need to have Metamask installed!");
-        return;
-    }
-    else
-    {
-        console.log("Metamask is installed.");
-    }
-  
-    const accounts = await ethereum.request({method: "eth_accounts" });
-  
-    if (accounts.length > 0)
-    {
-        const account = accounts[0];
-        setCurrentAccount(account);
-    }
+    await checkWalletConnection();
   }
-
-  useEffect(() => {
-    checkWalletConnection();
-  }, [])
-
 
   return (
     <div id="editor">
       <ButtonWrapper onClick={connectWalletHandler}>
         <p>{currentAccount ? currentAccount : "connect to wallet"}</p>
       </ButtonWrapper>
-          <CompactPicker 
-            color={selectedColor} 
-            onChangeComplete={changeColorHandler}
-          />
+      <CompactPicker 
+        color={selectedColor} 
+        onChangeComplete={changeColorHandler}
+      />
 
-          <PixelCanvas 
-            width={32}
-            height={32}
-            selectedColor={selectedColor}
-          />  
+      <PixelCanvas 
+        selectedColor={selectedColor}
+      />
+      <TimeDisplay pixelTime={freePixelTime} />
     </div> 
   )
 }
