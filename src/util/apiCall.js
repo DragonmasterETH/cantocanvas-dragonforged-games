@@ -1,5 +1,4 @@
 import ky from "ky";
-import { useWeb3Context } from './Web3Context';
 const apiPrefixUrl = "https://api.dragonforged.games/.netlify/functions/";
 
 const _API = ky.create({ prefixUrl: apiPrefixUrl });
@@ -31,21 +30,37 @@ async function getGrid(hash) {
 }
 
 async function getFreePixelTime(account) {
-  const path = "getFreePixelTime";
-  const body = {account: account};
+  if (account){
+    const path = "getFreePixelTime";
+    const body = {account: account};
 
-  return await dragonforgedApiCall(path, body);
+    return await dragonforgedApiCall(path, body);
+  }
+  else {
+    return null;
+  }
 }
 
 async function placePixel(account, message, signature, pixelId, color) {
-  return {'success': true};
-  const path = "placePixel";
-  const body = {account: account, message: message, signature: signature, pixelId: pixelId, color: color};
-  return await dragonforgedApiCall(path, body);
+  if (account){
+    const path = "placePixel";
+    const body = {account: account, message: message, signature: signature, pixelId: pixelId, color: color};
+    return await dragonforgedApiCall(path, body);
+  }
+  else{
+    return null;
+  }
+}
+
+async function uploadData(tokenId, imgURI) {
+    const path = "uploadData";
+    const body = {tokenId: tokenId, imgURI: imgURI};
+    return await dragonforgedApiCall(path, body);
 }
 
 export const dragonforgedAPI = {
   getGrid,
   getFreePixelTime,
-  placePixel
+  placePixel,
+  uploadData
 };

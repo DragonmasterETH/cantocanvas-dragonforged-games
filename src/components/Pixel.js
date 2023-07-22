@@ -4,8 +4,8 @@ import { useWeb3Context } from '../util/Web3Context';
 import { dragonforgedAPI } from '../util/apiCall';
 
 const PixelUnit = styled.div`
-  width: 2vw;
-  height: 2vw;
+  width: 1vw;
+  height: 1vw;
   cursor: pointer;
   backgroundColor: ${(props) => (props.color ? props.color : "#fff")}
 `;
@@ -18,16 +18,17 @@ function Pixel({ pixelId, selectedColor, serverColor, setBoardPixel}) {
 
   const applyColor = async () => {
     let message = "Confirm you are placing a new pixel at PixelId:"  + pixelId +
-                 " with " + selectedColor + " Nonce: " + Math.random();
+                  " with " + selectedColor + " Nonce: " + Math.random();
     let signature = await signMessage(message);
     if (await verifySignature(message, signature)) {
-      //let res = {'success': true};
-      let res = await dragonforgedAPI.placePixel(currentAccount, message, signature, pixelId, selectedColor);  
-      if (res.success)
+      let res = await dragonforgedAPI.placePixel(currentAccount, message, signature, pixelId, selectedColor);
+
+      //TODO pass nextFreePixelTime back up to TimeDisplay
+      if (res && res.nextFreePixelTime > 0)
       {
         setPixelColor(selectedColor);
         setCanChangeColor(false);
-        setBoardPixel(pixelId, selectedColor)
+        setBoardPixel(pixelId-1, selectedColor, res.nextFreePixelTime)
       }
       else
       {
