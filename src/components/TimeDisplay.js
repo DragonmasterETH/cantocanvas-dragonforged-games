@@ -33,7 +33,7 @@ export default function TimeDisplay({pixelTime}) {
 
   return (
     <div>
-          {timeRemaining ? ((timeRemaining.seconds > 1)
+          {timeRemaining ? ((timeRemaining.seconds > 0 && timeRemaining.minutes >= 0)
             ? <h1>Free pixel in {timeRemaining.minutes}:{timeRemaining.seconds < 10 ? "0" + timeRemaining.seconds : timeRemaining.seconds}</h1> : <h1><span style={{color:"green"}}><b>Ready to place</b></span></h1>)
           :
           <h2>Connect Wallet to Place Pixels</h2>
