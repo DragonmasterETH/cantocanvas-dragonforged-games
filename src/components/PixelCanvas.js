@@ -119,7 +119,7 @@ export default function PixelCanvas({ selectedColor, setNextPixelTime, MintNFT }
   return (
     <>
     <ButtonWrapper onClick={convertToDataURI}>
-        <p>Mint Canvas as NFT</p>
+        <p>Mint Canvas as NFT for 25 Canto</p>
       </ButtonWrapper>
       <div style={{height: "20px"}}>
       </div>
